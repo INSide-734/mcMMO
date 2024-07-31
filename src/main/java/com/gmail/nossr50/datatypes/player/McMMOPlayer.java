@@ -2,6 +2,7 @@ package com.gmail.nossr50.datatypes.player;
 
 import com.gmail.nossr50.api.exceptions.InvalidSkillException;
 import com.gmail.nossr50.chat.author.PlayerAuthor;
+import com.gmail.nossr50.config.AdvancedConfig;
 import com.gmail.nossr50.config.ChatConfig;
 import com.gmail.nossr50.config.WorldBlacklist;
 import com.gmail.nossr50.config.experience.ExperienceConfig;
@@ -239,7 +240,11 @@ public class McMMOPlayer implements Identified {
     }
 
     public double getAttackStrength() {
-        return player.getAttackCooldown();
+        if (mcMMO.p.getAdvancedConfig().useAttackCooldown()) {
+            return player.getAttackCooldown();
+        } else {
+            return 1.0D;
+        }
     }
 
     public @NotNull PrimarySkillType getLastSkillShownScoreboard() {
@@ -1059,9 +1064,12 @@ public class McMMOPlayer implements Identified {
         }
     }
 
-    private void tooTiredMultiple(PrimarySkillType primarySkillType, SubSkillType aSubSkill, SuperAbilityType aSuperAbility, SubSkillType bSubSkill, SuperAbilityType bSuperAbility) {
-        String aSuperAbilityCD = LocaleLoader.getString("Skills.TooTired.Named", aSubSkill.getLocaleName(), String.valueOf(calculateTimeRemaining(aSuperAbility)));
-        String bSuperAbilityCD = LocaleLoader.getString("Skills.TooTired.Named", bSubSkill.getLocaleName(), String.valueOf(calculateTimeRemaining(bSuperAbility)));
+    private void tooTiredMultiple(PrimarySkillType primarySkillType, SubSkillType aSubSkill,
+                                  SuperAbilityType aSuperAbility, SubSkillType bSubSkill, SuperAbilityType bSuperAbility) {
+        String aSuperAbilityCD = LocaleLoader.getString("Skills.TooTired.Named", aSubSkill.getLocaleName(),
+                String.valueOf(calculateTimeRemaining(aSuperAbility)));
+        String bSuperAbilityCD = LocaleLoader.getString("Skills.TooTired.Named", bSubSkill.getLocaleName(),
+                String.valueOf(calculateTimeRemaining(bSuperAbility)));
         String allCDStr = aSuperAbilityCD + ", " + bSuperAbilityCD;
 
         NotificationManager.sendPlayerInformation(player, NotificationType.TOOL, "Skills.TooTired.Extra",
